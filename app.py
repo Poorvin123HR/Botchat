@@ -10,7 +10,7 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
 # Set up Streamlit page
 st.set_page_config(page_title="Gemini Chatbot", layout="centered")
-st.title("🤖 Gemini Chatbot with Memory")
+st.title("🤖 AGRICULTURE CHATBOT")
 
 # Initialize chat history in session state
 if "chat_history" not in st.session_state:
