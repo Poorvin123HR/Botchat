@@ -79,19 +79,12 @@
 <div  class="gif-box">
   <img src="https://dkk4qeqny48s0.cloudfront.net/wp-content/uploads/2023/04/chatbots.jpg" 
        alt="Chatbot Icon" width="250" height="250" style="border-radius:20px;" 
-       onclick="callChatbot()">
+       <a href="https://github.com/Poorvin123HR/Botchat/blob/main/app.py"></a> >
        <p>Chat bot</p>
    </div>    
-       <script>
-    function callChatbot() {
-      fetch("http://127.0.0.1:5000/chatbot")
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById("response").innerText = data.reply;
-        });
-    }
-  </script>
+    
        
 
 </body>
+
 </html>
