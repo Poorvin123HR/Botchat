@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AgriBot</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #e0f7fa, #f1f8e9); /* soft farm-like colors */
+      font-family: 'Verdana', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    .marquee {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1b5e20;
+      background: #c8e6c9;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .gif-container {
+    display: flex;              /* arrange side by side */
+    justify-content: center;    /* center horizontally */
+    gap: 70px;                  /* space between GIFs */
+    margin-top: 30px;
+  }
+    .gif-box p {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #33691e;
+      font-weight: bold;
+    }
+    .rounded-gif {
+    border-radius: 20px;   /* curve corners */
+    border: 3px solid #2e7d32; /* optional green border */
+  }
+    
+  </style>
+</head>
+<body>
+ 
+<marquee class="marquee" direction="left" scrollamount="8">
+
+  WELCOME TO AGRI-CHATBOT  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WELCOME TO AGRI-CHATBOT  
+</marquee>
+<div class="gif-container">
+   <div class="gif-box">
+    <!-- Farming accessories GIF -->
+    <img src="https://media2.giphy.com/media/3YZ2Aj7clC5VE4JnNk/giphy.gif" 
+         alt="Farming Accessories" width="300" height="200"class="rounded-gif">
+         <p>Farming Accessories</p>
+   </div>      
+
+<div class="gif-box">
+
+    <!-- Alternative Fertilizer GIF -->
+    <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnBnZnY5a296a2JjcnY3MXp1MmNyODZzeGo3ZjFlMDExN2l2NDBoeiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/SVljsbgbg67HqjHrkf/giphy.gif" 
+         alt="Fertilizer Application" width="300" height="200"class="rounded-gif">
+         <p>Fertilizer Application</p>
+</div>
+  </div>
+
+<div class="gif-container">
+   <div class="gif-box">
+    <!-- crop reccom -->
+    <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzJjYnk2eXA4ZnN5amhoZ24yejRlcDY1eXoxZm0wamZ1ZjA3ZXhjdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4QFBn7Or4Qw43x6qVs/giphy.gif" 
+         alt="Farming Accessories" width="300" height="200"class="rounded-gif">
+         <p>Crop Reccomendation</p>
+   </div>      
+
+<div class="gif-box">
+
+    <!-- problem with crop -->
+    <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExcXIwbHg4ZWthYzhnZGFmODF3ZmJsd2hubWlzdXpkYXNnN3dyOHFpciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/s5DIPhvqysYOE5h0xH/giphy.gif" 
+         alt="Fertilizer Application" width="300" height="200"class="rounded-gif">
+         <p>Crop problem</p>
+</div>
+  </div>
+<div  class="gif-box">
+  <img src="https://dkk4qeqny48s0.cloudfront.net/wp-content/uploads/2023/04/chatbots.jpg" 
+       alt="Chatbot Icon" width="250" height="250" style="border-radius:20px;" 
+       onclick="callChatbot()">
+       <p>Chat bot</p>
+   </div>    
+       <script>
+    function callChatbot() {
+      fetch("http://127.0.0.1:5000/chatbot")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("response").innerText = data.reply;
+        });
+    }
+  </script>
+       
+
+</body>
+</html>
