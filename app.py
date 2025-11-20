@@ -53,11 +53,6 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #1b5e20 !important;
     }
-    .stAlert {
-        border-radius: 10px;
-        padding: 10px;
-    }
-    /* Sidebar */
     section[data-testid="stSidebar"] {
         background: linear-gradient(to bottom, #f1f8e9, #e0f7fa);
         border-left: 3px solid #2e7d32;
@@ -110,7 +105,6 @@ if "show_html" not in st.session_state: st.session_state.show_html = False
 with st.sidebar:
     st.markdown('<div class="sidebar-header">🌾 Controls</div>', unsafe_allow_html=True)
 
-    # Phone detail
     if st.session_state.current_phone:
         st.markdown(
             f'<div class="sidebar-phone">📱 Logged in: {st.session_state.current_phone}</div>',
@@ -119,7 +113,6 @@ with st.sidebar:
     else:
         st.markdown('<div class="sidebar-phone">📱 No phone number entered</div>', unsafe_allow_html=True)
 
-    # Buttons
     if st.button("🔁 Change Phone Number"):
         st.session_state.otp_sent = False
         st.session_state.verified = False
@@ -139,13 +132,38 @@ with st.sidebar:
             st.session_state.show_html = False
             st.rerun()
 
-# --- Show HTML page (Eclipse file) ---
+# --- Show HTML page (full screen) ---
 if st.session_state.show_html:
     try:
-        file_path = r"1.html"
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open("1.html", "r", encoding="utf-8") as f:
             html_content = f.read()
-        components.html(html_content, height=600, scrolling=True)
+
+        full_html = f"""
+        <html>
+          <head>
+            <style>
+              html, body {{
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                width: 100%;
+              }}
+              .container {{
+                width: 100%;
+                height: 100%;
+              }}
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              {html_content}
+            </div>
+          </body>
+        </html>
+        """
+
+        components.html(full_html, height=1000, scrolling=True)
+
     except Exception as e:
         st.error(f"Could not load HTML file: {e}")
 
