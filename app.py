@@ -142,7 +142,7 @@ with st.sidebar:
 # --- Show HTML page (Eclipse file) ---
 if st.session_state.show_html:
     try:
-        file_path = r"C:\Users\mithu\eclipse-workspace\mini\src\main\webapp\1.html"
+        file_path = r"1.html"
         with open(file_path, "r", encoding="utf-8") as f:
             html_content = f.read()
         components.html(html_content, height=600, scrolling=True)
