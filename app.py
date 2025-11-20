@@ -148,7 +148,7 @@ with st.sidebar:
             st.session_state.show_html = False
             st.rerun()
 
-# --- Show HTML page (full screen) ---
+# --- Show HTML page (auto full screen) ---
 if st.session_state.show_html:
     try:
         with open("1.html", "r", encoding="utf-8") as f:
@@ -164,21 +164,26 @@ if st.session_state.show_html:
                 height: 100%;
                 width: 100%;
               }}
-              .container {{
+              #content {{
                 width: 100%;
                 height: 100%;
               }}
             </style>
           </head>
           <body>
-            <div class="container">
-              {html_content}
-            </div>
+            <div id="content">{html_content}</div>
+            <script>
+              // Resize parent iframe to match browser window height
+              window.parent.document.querySelectorAll('iframe').forEach(f => {{
+                f.style.height = window.innerHeight + "px";
+              }});
+            </script>
           </body>
         </html>
         """
 
-        components.html(full_html, height=1000, scrolling=True)
+        # Render inside Streamlit
+        components.html(full_html, height=800, scrolling=True)
 
     except Exception as e:
         st.error(f"Could not load HTML file: {e}")
