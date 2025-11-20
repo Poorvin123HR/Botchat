@@ -61,56 +61,82 @@ st.markdown("""
 
 st.title("🤖 AGRICULTURE CHATBOT 🌱")
 
-# --- Step 1: Phone number input ---
+# --- State init ---
 if "otp_sent" not in st.session_state:
     st.session_state.otp_sent = False
 if "verified" not in st.session_state:
     st.session_state.verified = False
+if "current_phone" not in st.session_state:
+    st.session_state.current_phone = ""
+if "chat_histories" not in st.session_state:
+    st.session_state.chat_histories = {}
+if "confirm_clear" not in st.session_state:
+    st.session_state.confirm_clear = False
 
-phone = st.text_input("📱 Enter your phone number:", max_chars=10)
+# --- Change phone number button (visible anytime) ---
+col1, col2 = st.columns([1,1])
+with col2:
+    if st.button("🔁 Change phone number"):
+        # Reset login-related state and current context
+        st.session_state.otp_sent = False
+        st.session_state.verified = False
+        st.session_state.current_phone = ""
+        st.session_state.confirm_clear = False
+        # Do not delete chat_histories; they remain for each phone
+        st.rerun()
 
-if phone and not st.session_state.otp_sent:
-    if st.button("Send OTP"):
-        st.session_state.generated_otp = str(random.randint(1000, 9999))  # mock OTP
-        st.session_state.otp_sent = True
-        st.info(f"Mock OTP (for demo): {st.session_state.generated_otp}")  
-        # In production, send via SMS API like Twilio/Firebase instead of showing it
+# --- Phone + OTP flow ---
+if not st.session_state.verified:
+    # Phone input
+    phone = st.text_input("📱 Enter your phone number:", max_chars=10, value=st.session_state.current_phone)
+    if phone != st.session_state.current_phone:
+        st.session_state.current_phone = phone
 
-# --- Step 2: OTP verification ---
-if st.session_state.otp_sent and not st.session_state.verified:
-    otp_input = st.text_input("🔐 Enter OTP:", type="password")
-    if st.button("Verify OTP"):
-        if otp_input == st.session_state.generated_otp:
-            st.session_state.verified = True
-            st.success("✅ Verified! Welcome back.")
-        else:
-            st.error("❌ Invalid OTP. Try again.")
+    # Send OTP
+    if st.session_state.current_phone and not st.session_state.otp_sent:
+        if st.button("Send OTP"):
+            st.session_state.generated_otp = str(random.randint(1000, 9999))  # mock OTP
+            st.session_state.otp_sent = True
+            st.info(f"Mock OTP (for demo): {st.session_state.generated_otp}")
+            # In production, send via SMS API (Firebase/Twilio etc.)
 
-# --- Step 3: Multi-user chat handling ---
-if st.session_state.verified:
+    # Verify OTP
+    if st.session_state.otp_sent and not st.session_state.verified:
+        otp_input = st.text_input("🔐 Enter OTP:", type="password")
+        if st.button("Verify OTP"):
+            if otp_input == st.session_state.generated_otp:
+                st.session_state.verified = True
+                st.success("✅ Verified! Welcome back.")
+            else:
+                st.error("❌ Invalid OTP. Try again.")
+
+# --- After verification: chat UI for the current phone ---
+if st.session_state.verified and st.session_state.current_phone:
+    phone = st.session_state.current_phone
     filename = f"chat_{phone}.json"
 
-    # Initialize multi-user dict
-    if "chat_histories" not in st.session_state:
-        st.session_state.chat_histories = {}
-
     # Clear history with confirmation
-    if st.button("🗑️ Clear Chat History"):
-        st.session_state.confirm_clear = True
+    col_a, col_b = st.columns([1,1])
+    with col_a:
+        if st.button("🗑️ Clear Chat History"):
+            st.session_state.confirm_clear = True
 
-    if st.session_state.get("confirm_clear", False):
+    if st.session_state.confirm_clear:
         st.warning("⚠️ Are you sure you want to clear your chat history?")
-        if st.button("Yes, clear history"):
-            st.session_state.chat_histories[phone] = [SystemMessage(content="You are a helpful assistant.")]
-            if os.path.exists(filename):
-                os.remove(filename)
-            st.session_state.confirm_clear = False
-            st.success("Chat history cleared!")
-        if st.button("Cancel"):
-            st.session_state.confirm_clear = False
-            st.info("Clear history cancelled.")
+        c1, c2 = st.columns([1,1])
+        with c1:
+            if st.button("Yes, clear history"):
+                st.session_state.chat_histories[phone] = [SystemMessage(content="You are a helpful assistant.")]
+                if os.path.exists(filename):
+                    os.remove(filename)
+                st.session_state.confirm_clear = False
+                st.success("Chat history cleared!")
+        with c2:
+            if st.button("Cancel"):
+                st.session_state.confirm_clear = False
+                st.info("Clear history cancelled.")
 
-    # Load chat history for this phone
+    # Load chat history for this phone if not present
     if phone not in st.session_state.chat_histories:
         if os.path.exists(filename):
             with open(filename, "r") as f:
