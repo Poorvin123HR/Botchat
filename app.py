@@ -9,7 +9,7 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
 st.set_page_config(page_title="AgriBot Chatbot", layout="centered")
 
-# Inject AgriBot theme CSS
+# Inject AgriBot theme CSS with fixed buttons
 st.markdown("""
     <style>
     .stApp {
@@ -56,6 +56,15 @@ st.markdown("""
         border-radius: 10px;
         padding: 10px;
     }
+    /* Fixed top-right container */
+    .fixed-buttons {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 999;
+        display: flex;
+        gap: 10px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -73,13 +82,20 @@ if "chat_histories" not in st.session_state:
 if "confirm_clear" not in st.session_state:
     st.session_state.confirm_clear = False
 
-# --- Change phone number button ---
-if st.button("🔁 Change phone number"):
-    st.session_state.otp_sent = False
-    st.session_state.verified = False
-    st.session_state.current_phone = ""
-    st.session_state.confirm_clear = False
-    st.rerun()
+# --- Fixed top-right buttons ---
+st.markdown('<div class="fixed-buttons">', unsafe_allow_html=True)
+col1, col2 = st.columns([1,1])
+with col1:
+    if st.button("🔁 Change Phone Number"):
+        st.session_state.otp_sent = False
+        st.session_state.verified = False
+        st.session_state.current_phone = ""
+        st.session_state.confirm_clear = False
+        st.rerun()
+with col2:
+    if st.button("🗑️ Clear Chat History"):
+        st.session_state.confirm_clear = True
+st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Phone + OTP flow ---
 if not st.session_state.verified:
@@ -111,10 +127,7 @@ if st.session_state.verified and st.session_state.current_phone:
     phone = st.session_state.current_phone
     filename = f"chat_{phone}.json"
 
-    # Clear history with confirmation
-    if st.button("🗑️ Clear Chat History"):
-        st.session_state.confirm_clear = True
-
+    # Clear history confirmation
     if st.session_state.confirm_clear:
         st.warning("⚠️ Are you sure you want to clear your chat history?")
         col1, col2 = st.columns([1,1])
