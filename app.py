@@ -57,6 +57,7 @@ st.markdown("""
         border-radius: 10px;
         padding: 10px;
     }
+    /* Sidebar container */
     section[data-testid="stSidebar"] {
         background: linear-gradient(to bottom, #f1f8e9, #e0f7fa);
         border-left: 3px solid #2e7d32;
@@ -103,14 +104,17 @@ if "verified" not in st.session_state: st.session_state.verified = False
 if "current_phone" not in st.session_state: st.session_state.current_phone = ""
 if "chat_histories" not in st.session_state: st.session_state.chat_histories = {}
 if "confirm_clear" not in st.session_state: st.session_state.confirm_clear = False
-if "show_html" not in st.session_state: st.session_state.show_html = False  # NEW state for HTML view
+if "show_html" not in st.session_state: st.session_state.show_html = False  # HTML view toggle
 
 # --- Sidebar controls ---
 with st.sidebar:
     st.markdown('<div class="sidebar-header">🌾 Controls</div>', unsafe_allow_html=True)
 
     if st.session_state.current_phone:
-        st.markdown(f'<div class="sidebar-phone">📱 Logged in: {st.session_state.current_phone}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="sidebar-phone">📱 Logged in: {st.session_state.current_phone}</div>',
+            unsafe_allow_html=True
+        )
     else:
         st.markdown('<div class="sidebar-phone">📱 No phone number entered</div>', unsafe_allow_html=True)
 
@@ -119,7 +123,7 @@ with st.sidebar:
         st.session_state.verified = False
         st.session_state.current_phone = ""
         st.session_state.confirm_clear = False
-        st.show_html = False
+        st.session_state.show_html = False
         st.rerun()
 
     if st.button("🗑️ Clear Chat History"):
@@ -150,7 +154,7 @@ elif not st.session_state.verified:
 
     if st.session_state.current_phone and not st.session_state.otp_sent:
         if st.button("Send OTP"):
-            st.session_state.generated_otp = str(random.randint(1000, 9999))  # mock OTP
+            st.session_state.generated_otp = str(random.randint(1000, 9999))  # mock OTP for demo
             st.session_state.otp_sent = True
             st.info(f"Mock OTP (for demo): {st.session_state.generated_otp}")
 
@@ -187,7 +191,7 @@ elif st.session_state.verified and st.session_state.current_phone:
                 st.session_state.confirm_clear = False
                 st.info("Clear history cancelled.")
 
-    # Load chat history
+    # Load chat history for this phone if not present
     if phone not in st.session_state.chat_histories:
         if os.path.exists(filename):
             with open(filename, "r") as f:
@@ -207,4 +211,35 @@ elif st.session_state.verified and st.session_state.current_phone:
         else:
             st.session_state.chat_histories[phone] = [SystemMessage(content="You are a helpful assistant.")]
 
-    chat_history = st.session
+    # Use the session state's chat history
+    chat_history = st.session_state.chat_histories[phone]
+
+    # Display past messages
+    for msg in chat_history:
+        if isinstance(msg, HumanMessage):
+            st.chat_message("user").markdown(msg.content)
+        elif isinstance(msg, AIMessage):
+            st.chat_message("assistant").markdown(msg.content)
+
+    # User input
+    user_input = st.chat_input("Say something...")
+    if user_input:
+        chat_history.append(HumanMessage(content=user_input))
+        st.chat_message("user").markdown(user_input)
+
+        result = llm.invoke(chat_history)
+        response = result.content
+
+        chat_history.append(AIMessage(content=response))
+        st.chat_message("assistant").markdown(response)
+
+        # Save with role + content
+        with open(filename, "w") as f:
+            json.dump([
+                {
+                    "role": "user" if isinstance(m, HumanMessage) else
+                            "assistant" if isinstance(m, AIMessage) else "system",
+                    "content": m.content
+                }
+                for m in chat_history
+            ], f)
