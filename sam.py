@@ -30,4 +30,4 @@ full_html = f"""
 """
 
 # Render with a large height so it fills the page
-components.html(full_html, height=800, scrolling=True)
+components.html(full_html, height=1000, scrolling=True)
