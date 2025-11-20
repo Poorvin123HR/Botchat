@@ -90,6 +90,22 @@ if st.session_state.otp_sent and not st.session_state.verified:
 if st.session_state.verified:
     filename = f"chat_{phone}.json"
 
+    # Clear history with confirmation
+    if st.button("🗑️ Clear Chat History"):
+        st.session_state.confirm_clear = True
+
+    if st.session_state.get("confirm_clear", False):
+        st.warning("⚠️ Are you sure you want to clear your chat history?")
+        if st.button("Yes, clear history"):
+            st.session_state.chat_history = [SystemMessage(content="You are a helpful assistant.")]
+            if os.path.exists(filename):
+                os.remove(filename)
+            st.session_state.confirm_clear = False
+            st.success("Chat history cleared!")
+        if st.button("Cancel"):
+            st.session_state.confirm_clear = False
+            st.info("Clear history cancelled.")
+
     # Load chat history safely
     if "chat_history" not in st.session_state:
         if os.path.exists(filename):
