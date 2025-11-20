@@ -71,6 +71,17 @@ st.markdown("""
         text-align: center;
         text-shadow: 1px 1px 2px #a5d6a7;
     }
+    /* Sidebar phone detail */
+    .sidebar-phone {
+        font-size: 14px;
+        color: #33691e;
+        background: #c8e6c9;
+        padding: 8px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        text-align: center;
+        font-weight: 600;
+    }
     /* Sidebar buttons */
     section[data-testid="stSidebar"] button {
         background-color: #2e7d32 !important;
@@ -96,9 +107,16 @@ if "current_phone" not in st.session_state: st.session_state.current_phone = ""
 if "chat_histories" not in st.session_state: st.session_state.chat_histories = {}
 if "confirm_clear" not in st.session_state: st.session_state.confirm_clear = False
 
-# --- Sidebar: fixed controls ---
+# --- Sidebar: fixed controls + phone number detail ---
 with st.sidebar:
     st.markdown('<div class="sidebar-header">🌾 Controls</div>', unsafe_allow_html=True)
+
+    # Show current phone number if available
+    if st.session_state.current_phone:
+        st.markdown(f'<div class="sidebar-phone">📱 Logged in: {st.session_state.current_phone}</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="sidebar-phone">📱 No phone number entered</div>', unsafe_allow_html=True)
+
     if st.button("🔁 Change Phone Number"):
         st.session_state.otp_sent = False
         st.session_state.verified = False
