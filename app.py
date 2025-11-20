@@ -53,6 +53,10 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #1b5e20 !important;
     }
+    .stAlert {
+        border-radius: 10px;
+        padding: 10px;
+    }
     section[data-testid="stSidebar"] {
         background: linear-gradient(to bottom, #f1f8e9, #e0f7fa);
         border-left: 3px solid #2e7d32;
@@ -92,6 +96,18 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("🤖 AGRICULTURE CHATBOT 🌱")
+
+# --- Add marquee banner ---
+st.markdown("""
+<marquee class="marquee" direction="left" scrollamount="8"
+         style="color:#2e7d32; font-size:20px; font-weight:bold; background:#c8e6c9; padding:8px; border-radius:8px;">
+  WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  WELCOME TO AGRI-CHATBOT
+</marquee>
+""", unsafe_allow_html=True)
 
 # --- State init ---
 if "otp_sent" not in st.session_state: st.session_state.otp_sent = False
