@@ -93,6 +93,7 @@ if not st.session_state.verified:
             st.session_state.otp_sent = True
             st.info(f"Mock OTP (for demo): {st.session_state.generated_otp}")
 
+    # Only show OTP input while not verified
     if st.session_state.otp_sent and not st.session_state.verified:
         otp_input = st.text_input("🔐 Enter OTP:", type="password")
         if st.button("Verify OTP"):
@@ -101,7 +102,6 @@ if not st.session_state.verified:
                 st.success("✅ Verified! Welcome back.")
             else:
                 st.error("❌ Invalid OTP.")
-        # Reset OTP option
         if st.button("🔄 Reset OTP / Try Again"):
             st.session_state.otp_sent = False
             st.info("You can request a new OTP now.")
