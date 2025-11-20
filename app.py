@@ -15,18 +15,20 @@ st.set_page_config(page_title="Gemini Chatbot", layout="centered")
 # Inject AgriBot theme CSS
 st.markdown("""
     <style>
-    body {
+    /* Whole app background */
+    .stApp {
         background: linear-gradient(to right, #e0f7fa, #f1f8e9);
         font-family: 'Verdana', sans-serif;
     }
-    .stApp {
-        background: linear-gradient(to right, #e0f7fa, #f1f8e9);
-    }
+
+    /* Titles */
     h1, h2, h3 {
         color: #2e7d32;
         text-align: center;
         text-shadow: 2px 2px 4px #a5d6a7;
     }
+
+    /* Chat bubbles */
     .stChatMessage {
         border-radius: 15px;
         padding: 12px;
@@ -42,9 +44,34 @@ st.markdown("""
         border: 2px solid #2e7d32;
         color: #33691e;
     }
-    .stTextInput, .stChatInput {
+
+    /* Input box */
+    .stChatInput textarea {
         border-radius: 10px;
         border: 1px solid #a5d6a7;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Buttons */
+    button {
+        background-color: #2e7d32 !important;
+        color: white !important;
+        border-radius: 10px !important;
+        padding: 8px 16px !important;
+        font-size: 14px !important;
+    }
+    button:hover {
+        background-color: #1b5e20 !important;
+    }
+
+    /* Sidebar */
+    .css-1d391kg, .css-1lcbmhc {
+        background: #ffffff !important;
+        border: 2px solid #2e7d32 !important;
+        border-radius: 15px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+        padding: 10px !important;
     }
     </style>
 """, unsafe_allow_html=True)
