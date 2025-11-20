@@ -12,20 +12,15 @@ st.set_page_config(page_title="AgriBot Chatbot", layout="centered")
 # Inject AgriBot theme CSS
 st.markdown("""
     <style>
-    /* Whole app background */
     .stApp {
         background: linear-gradient(to right, #e0f7fa, #f1f8e9);
         font-family: 'Verdana', sans-serif;
     }
-
-    /* Titles */
     h1, h2, h3 {
         color: #2e7d32;
         text-align: center;
         text-shadow: 2px 2px 4px #a5d6a7;
     }
-
-    /* Chat bubbles */
     .stChatMessage {
         border-radius: 15px;
         padding: 12px;
@@ -41,16 +36,12 @@ st.markdown("""
         border: 2px solid #2e7d32;
         color: #33691e;
     }
-
-    /* Input boxes */
     .stTextInput input, .stChatInput textarea {
         border-radius: 10px;
         border: 1px solid #a5d6a7;
         padding: 10px;
         font-size: 14px;
     }
-
-    /* Buttons */
     button {
         background-color: #2e7d32 !important;
         color: white !important;
@@ -61,8 +52,6 @@ st.markdown("""
     button:hover {
         background-color: #1b5e20 !important;
     }
-
-    /* Info/Success/Error messages */
     .stAlert {
         border-radius: 10px;
         padding: 10px;
@@ -100,15 +89,24 @@ if st.session_state.otp_sent and not st.session_state.verified:
 # --- Step 3: Load chat if verified ---
 if st.session_state.verified:
     filename = f"chat_{phone}.json"
+
+    # Load chat history safely
     if "chat_history" not in st.session_state:
         if os.path.exists(filename):
             with open(filename, "r") as f:
                 saved = json.load(f)
-            st.session_state.chat_history = [
-                HumanMessage(content=m["content"]) if m["role"]=="user" else
-                AIMessage(content=m["content"]) if m["role"]=="assistant" else
-                SystemMessage(content=m["content"]) for m in saved
-            ]
+            history = []
+            for m in saved:
+                if isinstance(m, dict) and "role" in m and "content" in m:
+                    if m["role"] == "user":
+                        history.append(HumanMessage(content=m["content"]))
+                    elif m["role"] == "assistant":
+                        history.append(AIMessage(content=m["content"]))
+                    else:
+                        history.append(SystemMessage(content=m["content"]))
+                elif isinstance(m, str):  # fallback for old files
+                    history.append(HumanMessage(content=m))
+            st.session_state.chat_history = history
         else:
             st.session_state.chat_history = [SystemMessage(content="You are a helpful assistant.")]
 
@@ -133,6 +131,11 @@ if st.session_state.verified:
 
         # Save with role + content
         with open(filename, "w") as f:
-            json.dump([{"role": "user" if isinstance(m, HumanMessage) else
-                        "assistant" if isinstance(m, AIMessage) else "system",
-                        "content": m.content} for m in st.session_state.chat_history], f)
+            json.dump([
+                {
+                    "role": "user" if isinstance(m, HumanMessage) else
+                            "assistant" if isinstance(m, AIMessage) else "system",
+                    "content": m.content
+                }
+                for m in st.session_state.chat_history
+            ], f)
