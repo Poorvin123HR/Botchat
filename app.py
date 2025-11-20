@@ -86,9 +86,13 @@ if st.session_state.otp_sent and not st.session_state.verified:
         else:
             st.error("❌ Invalid OTP. Try again.")
 
-# --- Step 3: Load chat if verified ---
+# --- Step 3: Multi-user chat handling ---
 if st.session_state.verified:
     filename = f"chat_{phone}.json"
+
+    # Initialize multi-user dict
+    if "chat_histories" not in st.session_state:
+        st.session_state.chat_histories = {}
 
     # Clear history with confirmation
     if st.button("🗑️ Clear Chat History"):
@@ -97,7 +101,7 @@ if st.session_state.verified:
     if st.session_state.get("confirm_clear", False):
         st.warning("⚠️ Are you sure you want to clear your chat history?")
         if st.button("Yes, clear history"):
-            st.session_state.chat_history = [SystemMessage(content="You are a helpful assistant.")]
+            st.session_state.chat_histories[phone] = [SystemMessage(content="You are a helpful assistant.")]
             if os.path.exists(filename):
                 os.remove(filename)
             st.session_state.confirm_clear = False
@@ -106,8 +110,8 @@ if st.session_state.verified:
             st.session_state.confirm_clear = False
             st.info("Clear history cancelled.")
 
-    # Load chat history safely
-    if "chat_history" not in st.session_state:
+    # Load chat history for this phone
+    if phone not in st.session_state.chat_histories:
         if os.path.exists(filename):
             with open(filename, "r") as f:
                 saved = json.load(f)
@@ -122,12 +126,15 @@ if st.session_state.verified:
                         history.append(SystemMessage(content=m["content"]))
                 elif isinstance(m, str):  # fallback for old files
                     history.append(HumanMessage(content=m))
-            st.session_state.chat_history = history
+            st.session_state.chat_histories[phone] = history
         else:
-            st.session_state.chat_history = [SystemMessage(content="You are a helpful assistant.")]
+            st.session_state.chat_histories[phone] = [SystemMessage(content="You are a helpful assistant.")]
+
+    # Use this phone's history
+    chat_history = st.session_state.chat_histories[phone]
 
     # Display past messages
-    for msg in st.session_state.chat_history:
+    for msg in chat_history:
         if isinstance(msg, HumanMessage):
             st.chat_message("user").markdown(msg.content)
         elif isinstance(msg, AIMessage):
@@ -136,13 +143,13 @@ if st.session_state.verified:
     # User input
     user_input = st.chat_input("Say something...")
     if user_input:
-        st.session_state.chat_history.append(HumanMessage(content=user_input))
+        chat_history.append(HumanMessage(content=user_input))
         st.chat_message("user").markdown(user_input)
 
-        result = llm.invoke(st.session_state.chat_history)
+        result = llm.invoke(chat_history)
         response = result.content
 
-        st.session_state.chat_history.append(AIMessage(content=response))
+        chat_history.append(AIMessage(content=response))
         st.chat_message("assistant").markdown(response)
 
         # Save with role + content
@@ -153,5 +160,5 @@ if st.session_state.verified:
                             "assistant" if isinstance(m, AIMessage) else "system",
                     "content": m.content
                 }
-                for m in st.session_state.chat_history
+                for m in chat_history
             ], f)
