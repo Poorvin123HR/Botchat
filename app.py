@@ -4,13 +4,13 @@ import streamlit.components.v1 as components
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
-# Setup
+# --- Setup ---
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
 st.set_page_config(page_title="AgriBot Chatbot", layout="centered")
 
-# Theme CSS including sidebar styling
+# --- Theme CSS (app + sidebar) ---
 st.markdown("""
     <style>
     .stApp {
@@ -57,7 +57,7 @@ st.markdown("""
         border-radius: 10px;
         padding: 10px;
     }
-    /* Sidebar container */
+    /* Sidebar */
     section[data-testid="stSidebar"] {
         background: linear-gradient(to bottom, #f1f8e9, #e0f7fa);
         border-left: 3px solid #2e7d32;
@@ -104,12 +104,13 @@ if "verified" not in st.session_state: st.session_state.verified = False
 if "current_phone" not in st.session_state: st.session_state.current_phone = ""
 if "chat_histories" not in st.session_state: st.session_state.chat_histories = {}
 if "confirm_clear" not in st.session_state: st.session_state.confirm_clear = False
-if "show_html" not in st.session_state: st.session_state.show_html = False  # HTML view toggle
+if "show_html" not in st.session_state: st.session_state.show_html = False
 
 # --- Sidebar controls ---
 with st.sidebar:
     st.markdown('<div class="sidebar-header">🌾 Controls</div>', unsafe_allow_html=True)
 
+    # Phone detail
     if st.session_state.current_phone:
         st.markdown(
             f'<div class="sidebar-phone">📱 Logged in: {st.session_state.current_phone}</div>',
@@ -118,6 +119,7 @@ with st.sidebar:
     else:
         st.markdown('<div class="sidebar-phone">📱 No phone number entered</div>', unsafe_allow_html=True)
 
+    # Buttons
     if st.button("🔁 Change Phone Number"):
         st.session_state.otp_sent = False
         st.session_state.verified = False
@@ -137,10 +139,11 @@ with st.sidebar:
             st.session_state.show_html = False
             st.rerun()
 
-# --- Show HTML page if requested ---
+# --- Show HTML page (Eclipse file) ---
 if st.session_state.show_html:
     try:
-        with open(r"C:\Users\mithu\eclipse-workspace\mini\src\main\webapp\1.html", "r", encoding="utf-8") as f:
+        file_path = r"C:\Users\mithu\eclipse-workspace\mini\src\main\webapp\1.html"
+        with open(file_path, "r", encoding="utf-8") as f:
             html_content = f.read()
         components.html(html_content, height=600, scrolling=True)
     except Exception as e:
@@ -170,7 +173,7 @@ elif not st.session_state.verified:
             st.session_state.otp_sent = False
             st.info("You can request a new OTP now.")
 
-# --- After verification: chat UI ---
+# --- Chat UI after verification ---
 elif st.session_state.verified and st.session_state.current_phone:
     phone = st.session_state.current_phone
     filename = f"chat_{phone}.json"
@@ -191,7 +194,7 @@ elif st.session_state.verified and st.session_state.current_phone:
                 st.session_state.confirm_clear = False
                 st.info("Clear history cancelled.")
 
-    # Load chat history for this phone if not present
+    # Load chat history if missing
     if phone not in st.session_state.chat_histories:
         if os.path.exists(filename):
             with open(filename, "r") as f:
@@ -211,8 +214,8 @@ elif st.session_state.verified and st.session_state.current_phone:
         else:
             st.session_state.chat_histories[phone] = [SystemMessage(content="You are a helpful assistant.")]
 
-    # Use the session state's chat history
     chat_history = st.session_state.chat_histories[phone]
+
 
     # Display past messages
     for msg in chat_history:
