@@ -140,7 +140,7 @@ with st.sidebar:
     if st.button("🗑️ Clear Chat History"):
         st.session_state.confirm_clear = True
 
-    if st.button("📄 Open HTML Page"):
+    if st.button("Other Features"):
         st.session_state.show_html = True
 
     if st.session_state.show_html:
