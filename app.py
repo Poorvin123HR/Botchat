@@ -151,7 +151,7 @@ with st.sidebar:
 # --- Show HTML page (auto full screen) ---
 if st.session_state.show_html:
     try:
-        with open("1.html", "r", encoding="utf-8") as f:
+        with open("sam.py", "r", encoding="utf-8") as f:
             html_content = f.read()
 
         full_html = f"""
