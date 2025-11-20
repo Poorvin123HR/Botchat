@@ -51,7 +51,7 @@ if not st.session_state.verified:
                 st.success("✅ Verified! Welcome back.")
             else:
                 st.error("❌ Invalid OTP.")
-        # Show reset option if OTP was wrong
+        # Reset OTP option
         if st.button("🔄 Reset OTP / Try Again"):
             st.session_state.otp_sent = False
             st.info("You can request a new OTP now.")
