@@ -10,7 +10,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 # Path to your HTML file
-file_path = r"C:\Users\mithu\eclipse-workspace\mini\src\main\webapp\1.html"
+file_path = r"1.html"
 
 with open(file_path, "r", encoding="utf-8") as f:
     html_content = f.read()
