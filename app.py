@@ -9,7 +9,7 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
 st.set_page_config(page_title="AgriBot Chatbot", layout="centered")
 
-# Theme CSS
+# Inject AgriBot theme CSS including sidebar styling
 st.markdown("""
     <style>
     .stApp {
@@ -56,27 +56,49 @@ st.markdown("""
         border-radius: 10px;
         padding: 10px;
     }
-    /* Sidebar header style */
+    /* Sidebar container */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(to bottom, #f1f8e9, #e0f7fa);
+        border-left: 3px solid #2e7d32;
+        padding: 20px;
+    }
+    /* Sidebar header */
     .sidebar-header {
         font-weight: 700;
+        font-size: 18px;
         color: #1b5e20;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        text-align: center;
+        text-shadow: 1px 1px 2px #a5d6a7;
+    }
+    /* Sidebar buttons */
+    section[data-testid="stSidebar"] button {
+        background-color: #2e7d32 !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 8px 14px !important;
+        font-size: 14px !important;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    section[data-testid="stSidebar"] button:hover {
+        background-color: #1b5e20 !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("🤖 AGRICULTURE CHATBOT 🌱")
 
-# State
+# --- State init ---
 if "otp_sent" not in st.session_state: st.session_state.otp_sent = False
 if "verified" not in st.session_state: st.session_state.verified = False
 if "current_phone" not in st.session_state: st.session_state.current_phone = ""
 if "chat_histories" not in st.session_state: st.session_state.chat_histories = {}
 if "confirm_clear" not in st.session_state: st.session_state.confirm_clear = False
 
-# Sidebar: fixed controls
+# --- Sidebar: fixed controls ---
 with st.sidebar:
-    st.markdown('<div class="sidebar-header">Controls</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-header">🌾 Controls</div>', unsafe_allow_html=True)
     if st.button("🔁 Change Phone Number"):
         st.session_state.otp_sent = False
         st.session_state.verified = False
@@ -87,7 +109,7 @@ with st.sidebar:
     if st.button("🗑️ Clear Chat History"):
         st.session_state.confirm_clear = True
 
-# Phone + OTP flow
+# --- Phone + OTP flow ---
 if not st.session_state.verified:
     phone = st.text_input("📱 Enter your phone number:", max_chars=10, value=st.session_state.current_phone)
     if phone != st.session_state.current_phone:
@@ -111,12 +133,12 @@ if not st.session_state.verified:
             st.session_state.otp_sent = False
             st.info("You can request a new OTP now.")
 
-# After verification: chat UI
+# --- After verification: chat UI ---
 if st.session_state.verified and st.session_state.current_phone:
     phone = st.session_state.current_phone
     filename = f"chat_{phone}.json"
 
-    # Clear history confirmation (still in main area for clarity)
+    # Clear history confirmation
     if st.session_state.confirm_clear:
         st.warning("⚠️ Are you sure you want to clear your chat history?")
         col1, col2 = st.columns([1,1])
