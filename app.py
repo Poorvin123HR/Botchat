@@ -149,7 +149,14 @@ with st.sidebar:
             st.rerun()
 
 
-if st.button(" '<a href="http://localhost:8080/mini/1.html" target="_blank">🌐 Open AgriBot Webpage</a>'"):
+if st.session_state.show_html:
+    st.markdown(
+        """
+        <meta http-equiv="refresh" content="0; url=http://localhost:8080/mini/1.html">
+        """,
+        unsafe_allow_html=True
+    )
+
     
 
 
