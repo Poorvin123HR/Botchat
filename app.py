@@ -146,18 +146,6 @@ with st.sidebar:
             st.session_state.show_html = False
             st.rerun()
 
-    # Kannada Keyboard
-    st.markdown("📝 Kannada Keyboard")
-    components.html("""
-        <textarea id="knInput" rows="3" style="width:100%; font-size:16px;"></textarea>
-        <script src="https://www.gstatic.com/inputtools/js/keyboard.js"></script>
-        <script>
-          google.elements.keyboard.loadme({id:'kn', title:'Kannada', modes:['kn'], language:['kn']});
-          var kbd = new google.elements.keyboard.Keyboard('kn');
-          kbd.render(document.getElementById('knInput'));
-        </script>
-    """, height=200)
-
 # --- Title ---
 st.title(t["title"])
 
