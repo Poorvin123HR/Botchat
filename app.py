@@ -149,6 +149,7 @@ with st.sidebar:
             st.rerun()
 
 
+# --- Direct redirect to external page ---
 if st.session_state.show_html:
     st.markdown(
         """
@@ -156,6 +157,7 @@ if st.session_state.show_html:
         """,
         unsafe_allow_html=True
     )
+
 
     
 
