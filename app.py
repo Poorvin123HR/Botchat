@@ -37,29 +37,48 @@ st.markdown("""
         border: 2px solid #2e7d32;
         color: #33691e;
     }
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(to bottom, #f1f8e9, #e0f7fa);
-        border-left: 3px solid #2e7d32;
-        padding: 20px;
-    }
-    .sidebar-header {
-        font-weight: 700;
-        font-size: 18px;
-        color: #1b5e20;
-        margin-bottom: 12px;
-        text-align: center;
-        text-shadow: 1px 1px 2px #a5d6a7;
-    }
-    .sidebar-phone {
-        font-size: 14px;
-        color: #33691e;
-        background: #c8e6c9;
-        padding: 8px;
-        border-radius: 8px;
-        margin-bottom: 12px;
-        text-align: center;
-        font-weight: 600;
-    }
+    /* Sidebar full background */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(to bottom, #f1f8e9, #e0f7fa);
+    border-left: 3px solid #2e7d32;
+    padding: 20px;
+}
+
+/* Sidebar header */
+.sidebar-header {
+    font-weight: 700;
+    font-size: 18px;
+    color: #1b5e20;
+    margin-bottom: 12px;
+    text-align: center;
+    text-shadow: 1px 1px 2px #a5d6a7;
+}
+
+/* Phone status box */
+.sidebar-phone {
+    font-size: 14px;
+    color: #33691e;
+    background: #c8e6c9;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Sidebar buttons */
+section[data-testid="stSidebar"] button {
+    background-color: #2e7d32 !important;
+    color: white !important;
+    border-radius: 8px !important;
+    padding: 8px 14px !important;
+    font-size: 14px !important;
+    margin-bottom: 10px;
+    width: 100%;
+}
+section[data-testid="stSidebar"] button:hover {
+    background-color: #1b5e20 !important;
+}
     </style>
 """, unsafe_allow_html=True)
 
