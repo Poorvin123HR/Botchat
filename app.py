@@ -3,10 +3,12 @@ import random, json, os
 import streamlit.components.v1 as components
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+from googletrans import Translator
 
 # --- Setup ---
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+translator = Translator()
 
 st.set_page_config(page_title="AgriBot Chatbot", layout="centered")
 
@@ -95,8 +97,31 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🤖 AGRICULTURE CHATBOT 🌱")
-
+# --- Translations ---
+translations = {
+    "English": {
+        "title": "🤖 AGRICULTURE CHATBOT 🌱",
+        "enter_phone": "📱 Enter your phone number:",
+        "send_otp": "Send OTP",
+        "enter_otp": "🔐 Enter OTP:",
+        "verify_otp": "Verify OTP",
+        "reset_otp": "🔄 Reset OTP / Try Again",
+        "verified": "✅ Verified! Welcome back.",
+        "invalid_otp": "❌ Invalid OTP.",
+        "say_something": "Say something..."
+    },
+    "Kannada": {
+        "title": "🤖 ಕೃಷಿ ಚಾಟ್‌ಬಾಟ್ 🌱",
+        "enter_phone": "📱 ನಿಮ್ಮ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ:",
+        "send_otp": "OTP ಕಳುಹಿಸಿ",
+        "enter_otp": "🔐 OTP ನಮೂದಿಸಿ:",
+        "verify_otp": "OTP ಪರಿಶೀಲಿಸಿ",
+        "reset_otp": "🔄 OTP ಮರುಹೊಂದಿಸಿ / ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
+        "verified": "✅ ಪರಿಶೀಲಿಸಲಾಗಿದೆ! ಮತ್ತೆ ಸ್ವಾಗತ.",
+        "invalid_otp": "❌ ತಪ್ಪಾದ OTP.",
+        "say_something": "ಏನಾದರೂ ಹೇಳಿ..."
+    }
+}
 
 # --- State init ---
 if "otp_sent" not in st.session_state: st.session_state.otp_sent = False
@@ -109,6 +134,13 @@ if "show_html" not in st.session_state: st.session_state.show_html = False
 # --- Sidebar controls ---
 with st.sidebar:
     st.markdown('<div class="sidebar-header">🌾 Controls</div>', unsafe_allow_html=True)
+
+    # Language toggle
+    lang_choice = st.radio("🌐 Language", ["English", "Kannada"])
+    t = translations[lang_choice]
+
+    # History language toggle
+    history_lang = st.radio("📖 Chat History Language", ["Kannada", "English"])
 
     if st.session_state.current_phone:
         st.markdown(
@@ -137,40 +169,34 @@ with st.sidebar:
             st.session_state.show_html = False
             st.rerun()
 
-
 # --- Redirect to external page in new tab ---
 if st.session_state.show_html:
     st.markdown(
-        '<a href="http://localhost:8080/mini/1.html" target="_blank">'
-        'Home Page</a>',
+        '<a href="http://localhost:8080/mini/1.html" target="_blank">Home Page</a>',
         unsafe_allow_html=True
     )
 
-
-    
-
-
 # --- Phone + OTP flow ---
 elif not st.session_state.verified:
-    phone = st.text_input("📱 Enter your phone number:", max_chars=10, value=st.session_state.current_phone)
+    phone = st.text_input(t["enter_phone"], max_chars=10, value=st.session_state.current_phone)
     if phone != st.session_state.current_phone:
         st.session_state.current_phone = phone
 
     if st.session_state.current_phone and not st.session_state.otp_sent:
-        if st.button("Send OTP"):
-            st.session_state.generated_otp = str(random.randint(1000, 9999))  # mock OTP for demo
+        if st.button(t["send_otp"]):
+            st.session_state.generated_otp = str(random.randint(1000, 9999))  # mock OTP
             st.session_state.otp_sent = True
             st.info(f"Mock OTP (for demo): {st.session_state.generated_otp}")
 
     if st.session_state.otp_sent and not st.session_state.verified:
-        otp_input = st.text_input("🔐 Enter OTP:", type="password")
-        if st.button("Verify OTP"):
+        otp_input = st.text_input(t["enter_otp"], type="password")
+        if st.button(t["verify_otp"]):
             if otp_input == st.session_state.generated_otp:
                 st.session_state.verified = True
-                st.success("✅ Verified! Welcome back.")
+                st.success(t["verified"])
             else:
-                st.error("❌ Invalid OTP.")
-        if st.button("🔄 Reset OTP / Try Again"):
+                st.error(t["invalid_otp"])
+        if st.button(t["reset_otp"]):
             st.session_state.otp_sent = False
             st.info("You can request a new OTP now.")
 
