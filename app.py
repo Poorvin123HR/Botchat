@@ -37,6 +37,29 @@ st.markdown("""
         border: 2px solid #2e7d32;
         color: #33691e;
     }
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(to bottom, #f1f8e9, #e0f7fa);
+        border-left: 3px solid #2e7d32;
+        padding: 20px;
+    }
+    .sidebar-header {
+        font-weight: 700;
+        font-size: 18px;
+        color: #1b5e20;
+        margin-bottom: 12px;
+        text-align: center;
+        text-shadow: 1px 1px 2px #a5d6a7;
+    }
+    .sidebar-phone {
+        font-size: 14px;
+        color: #33691e;
+        background: #c8e6c9;
+        padding: 8px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        text-align: center;
+        font-weight: 600;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -80,18 +103,61 @@ if "otp_sent" not in st.session_state: st.session_state.otp_sent = False
 if "verified" not in st.session_state: st.session_state.verified = False
 if "current_phone" not in st.session_state: st.session_state.current_phone = ""
 if "chat_histories" not in st.session_state: st.session_state.chat_histories = {}
+if "confirm_clear" not in st.session_state: st.session_state.confirm_clear = False
+if "show_html" not in st.session_state: st.session_state.show_html = False
 
-# --- Sidebar controls ---
+# --- Sidebar controls (merged old + new) ---
 with st.sidebar:
+    st.markdown('<div class="sidebar-header">🌾 Controls</div>', unsafe_allow_html=True)
+
+    # Language toggle
     lang_choice = st.radio("🌐 Language", ["English", "Kannada"])
     t = translations[lang_choice]
+
+    # History language toggle
     history_lang = st.radio("📖 Chat History Language", ["Kannada", "English"])
+
+    # Phone status
+    if st.session_state.current_phone:
+        st.markdown(
+            f'<div class="sidebar-phone">📱 Logged in: {st.session_state.current_phone}</div>',
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown('<div class="sidebar-phone">📱 No phone number entered</div>', unsafe_allow_html=True)
+
+    # Old sidebar buttons
+    if st.button("🔁 Change Phone Number"):
+        st.session_state.otp_sent = False
+        st.session_state.verified = False
+        st.session_state.current_phone = ""
+        st.session_state.confirm_clear = False
+        st.session_state.show_html = False
+        st.rerun()
+
+    if st.button("🗑️ Clear Chat History"):
+        st.session_state.confirm_clear = True
+
+    if st.button("Other Features"):
+        st.session_state.show_html = True
+
+    if st.session_state.show_html:
+        if st.button("⬅️ Back to Chatbot"):
+            st.session_state.show_html = False
+            st.rerun()
 
 # --- Title ---
 st.title(t["title"])
 
+# --- Redirect to external page ---
+if st.session_state.show_html:
+    st.markdown(
+        '<a href="http://localhost:8080/mini/1.html" target="_blank">Home Page</a>',
+        unsafe_allow_html=True
+    )
+
 # --- Phone + OTP flow ---
-if not st.session_state.verified:
+elif not st.session_state.verified:
     phone = st.text_input(t["enter_phone"], max_chars=10, value=st.session_state.current_phone)
     if phone != st.session_state.current_phone:
         st.session_state.current_phone = phone
@@ -118,6 +184,22 @@ if not st.session_state.verified:
 elif st.session_state.verified and st.session_state.current_phone:
     phone = st.session_state.current_phone
     filename = f"chat_{phone}.json"
+
+    # Clear history confirmation
+    if st.session_state.confirm_clear:
+        st.warning("⚠️ Are you sure you want to clear your chat history?")
+        col1, col2 = st.columns([1,1])
+        with col1:
+            if st.button("Yes, clear history"):
+                st.session_state.chat_histories[phone] = []
+                if os.path.exists(filename):
+                    os.remove(filename)
+                st.session_state.confirm_clear = False
+                st.success("Chat history cleared!")
+        with col2:
+            if st.button("Cancel"):
+                st.session_state.confirm_clear = False
+                st.info("Clear history cancelled.")
 
     # Load history
     if phone not in st.session_state.chat_histories:
