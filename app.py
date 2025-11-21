@@ -149,16 +149,8 @@ with st.sidebar:
             st.rerun()
 
 
-if st.button("Other Features"):
-    st.markdown(
-        '<a href="http://localhost:8080/mini/1.html" target="_blank">🌐 Open AgriBot Webpage</a>',
-        unsafe_allow_html=True
-    )
-
-
-
-
-
+if st.button(" '<a href="http://localhost:8080/mini/1.html" target="_blank">🌐 Open AgriBot Webpage</a>'"):
+    
 
 
 # --- Phone + OTP flow ---
