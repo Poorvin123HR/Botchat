@@ -148,45 +148,19 @@ with st.sidebar:
             st.session_state.show_html = False
             st.rerun()
 
-# --- Show HTML page (auto full screen) ---
+# --- Show external HTML page (redirect) ---
 if st.session_state.show_html:
     try:
-        with open("http://localhost:8080/mini/1.html", "r", encoding="utf-8") as f:
-            html_content = f.read()
-
-        full_html = f"""
-        <html>
-          <head>
-            <style>
-              html, body {{
-                margin: 0;
-                padding: 0;
-                height: 100%;
-                width: 100%;
-              }}
-              #content {{
-                width: 100%;
-                height: 100%;
-              }}
-            </style>
-          </head>
-          <body>
-            <div id="content">{html_content}</div>
-            <script>
-              // Resize parent iframe to match browser window height
-              window.parent.document.querySelectorAll('iframe').forEach(f => {{
-                f.style.height = window.innerHeight + "px";
-              }});
-            </script>
-          </body>
-        </html>
-        """
-
-        # Render inside Streamlit
-        components.html(full_html, height=800, scrolling=True)
-
+        components.html(
+            '<iframe src="http://localhost:8080/mini/1.html" '
+            'style="width:100%; height:100vh; border:none;"></iframe>',
+            height=800,
+            scrolling=True
+        )
     except Exception as e:
-        st.error(f"Could not load HTML file: {e}")
+        st.error(f"Could not load external page: {e}")
+
+
 
 # --- Phone + OTP flow ---
 elif not st.session_state.verified:
