@@ -97,17 +97,6 @@ st.markdown("""
 
 st.title("🤖 AGRICULTURE CHATBOT 🌱")
 
-# --- Add marquee banner ---
-st.markdown("""
-<marquee class="marquee" direction="left" scrollamount="8"
-         style="color:#2e7d32; font-size:20px; font-weight:bold; background:#c8e6c9; padding:8px; border-radius:8px;">
-  WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  WELCOME TO AGRI-CHATBOT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  WELCOME TO AGRI-CHATBOT
-</marquee>
-""", unsafe_allow_html=True)
 
 # --- State init ---
 if "otp_sent" not in st.session_state: st.session_state.otp_sent = False
