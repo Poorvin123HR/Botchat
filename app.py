@@ -148,17 +148,13 @@ with st.sidebar:
             st.session_state.show_html = False
             st.rerun()
 
-# --- Show external HTML page (redirect) ---
+# --- Redirect to external page in new tab ---
 if st.session_state.show_html:
-    try:
-        components.html(
-            '<iframe src="http://localhost:8080/mini/1.html" '
-            'style="width:100%; height:100vh; border:none;"></iframe>',
-            height=800,
-            scrolling=True
-        )
-    except Exception as e:
-        st.error(f"Could not load external page: {e}")
+    st.markdown(
+        '<a href="http://localhost:8080/mini/1.html" target="_blank">'
+        '🌐 Open AgriBot Webpage</a>',
+        unsafe_allow_html=True
+    )
 
 
 
