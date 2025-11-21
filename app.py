@@ -151,12 +151,12 @@ with st.sidebar:
 
 # --- Direct redirect to external page ---
 if st.session_state.show_html:
-    st.markdown(
-        """
-        <meta http-equiv="refresh" content="0; url=http://localhost:8080/mini/1.html">
-        """,
-        unsafe_allow_html=True
-    )
+    redirect_html = """
+    <script type="text/javascript">
+        window.location.href = "http://localhost:8080/mini/1.html";
+    </script>
+    """
+    st.markdown(redirect_html, unsafe_allow_html=True)
 
 
     
