@@ -106,7 +106,7 @@ if "chat_histories" not in st.session_state: st.session_state.chat_histories = {
 if "confirm_clear" not in st.session_state: st.session_state.confirm_clear = False
 if "show_html" not in st.session_state: st.session_state.show_html = False
 
-# --- Sidebar controls (merged old + new) ---
+# --- Sidebar controls (merged old + new + Kannada keyboard) ---
 with st.sidebar:
     st.markdown('<div class="sidebar-header">🌾 Controls</div>', unsafe_allow_html=True)
 
@@ -145,6 +145,18 @@ with st.sidebar:
         if st.button("⬅️ Back to Chatbot"):
             st.session_state.show_html = False
             st.rerun()
+
+    # Kannada Keyboard
+    st.markdown("📝 Kannada Keyboard")
+    components.html("""
+        <textarea id="knInput" rows="3" style="width:100%; font-size:16px;"></textarea>
+        <script src="https://www.gstatic.com/inputtools/js/keyboard.js"></script>
+        <script>
+          google.elements.keyboard.loadme({id:'kn', title:'Kannada', modes:['kn'], language:['kn']});
+          var kbd = new google.elements.keyboard.Keyboard('kn');
+          kbd.render(document.getElementById('knInput'));
+        </script>
+    """, height=200)
 
 # --- Title ---
 st.title(t["title"])
