@@ -142,7 +142,7 @@ with st.sidebar:
 if st.session_state.show_html:
     st.markdown(
         '<a href="http://localhost:8080/mini/1.html" target="_blank">'
-        '🌐 Open AgriBot Webpage</a>',
+        'Home Page</a>',
         unsafe_allow_html=True
     )
 
