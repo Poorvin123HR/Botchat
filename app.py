@@ -149,14 +149,13 @@ with st.sidebar:
             st.rerun()
 
 
-# --- Direct redirect to external page ---
+# --- Redirect to external page in new tab ---
 if st.session_state.show_html:
-    redirect_html = """
-    <script type="text/javascript">
-        window.location.href = "http://localhost:8080/mini/1.html";
-    </script>
-    """
-    st.markdown(redirect_html, unsafe_allow_html=True)
+    st.markdown(
+        '<a href="http://localhost:8080/mini/1.html" target="_blank">'
+        '🌐 Open AgriBot Webpage</a>',
+        unsafe_allow_html=True
+    )
 
 
     
