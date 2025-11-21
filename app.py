@@ -149,14 +149,12 @@ with st.sidebar:
             st.rerun()
 
 
-# --- Direct redirect to external page ---
-if st.session_state.show_html:
+if st.button("Other Features"):
     st.markdown(
-        """
-        <meta http-equiv="refresh" content="0; url=http://localhost:8080/mini/1.html">
-        """,
+        '<a href="http://localhost:8080/mini/1.html" target="_blank">🌐 Open AgriBot Webpage</a>',
         unsafe_allow_html=True
     )
+
 
 
 
