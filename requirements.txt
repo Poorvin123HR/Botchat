@@ -1,2 +1,5 @@
 streamlit
 langchain-google-genai
+gtts
+SpeechRecognition
+pydub
