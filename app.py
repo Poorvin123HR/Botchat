@@ -55,20 +55,72 @@ translations = {
         "say_something":"ಏನಾದರೂ ಹೇಳಿ...",
         "clear_history":"🗑️ ಚಾಟ್ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಿ",
         "change_phone":"🔁 ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ಬದಲಿಸಿ"
+    },
+    "Hindi": {
+        "title":"🤖 कृषि चैटबॉट 🌱",
+        "enter_phone":"📱 अपना फोन नंबर दर्ज करें:",
+        "send_otp":"OTP भेजें",
+        "enter_otp":"🔐 OTP दर्ज करें:",
+        "verify_otp":"OTP सत्यापित करें",
+        "reset_otp":"🔄 OTP रीसेट / पुनः प्रयास करें",
+        "verified":"✅ सत्यापित! स्वागत है।",
+        "invalid_otp":"❌ अमान्य OTP।",
+        "say_something":"कुछ कहें...",
+        "clear_history":"🗑️ चैट इतिहास साफ़ करें",
+        "change_phone":"🔁 फोन नंबर बदलें"
+    },
+    "Telugu": {
+        "title":"🤖 వ్యవసాయ చాట్‌బాట్ 🌱",
+        "enter_phone":"📱 మీ ఫోన్ నంబర్ నమోదు చేయండి:",
+        "send_otp":"OTP పంపండి",
+        "enter_otp":"🔐 OTP నమోదు చేయండి:",
+        "verify_otp":"OTP నిర్ధారించండి",
+        "reset_otp":"🔄 OTP రీసెట్ / మళ్లీ ప్రయత్నించండి",
+        "verified":"✅ ధృవీకరించబడింది! స్వాగతం.",
+        "invalid_otp":"❌ అమాన్య OTP.",
+        "say_something":"ఏదైనా చెప్పండి...",
+        "clear_history":"🗑️ చాట్ చరిత్రను తొలగించండి",
+        "change_phone":"🔁 ఫోన్ నంబర్ మార్చండి"
+    },
+    "Tamil": {
+        "title":"🤖 வேளாண் சாட்பாட் 🌱",
+        "enter_phone":"📱 உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்:",
+        "send_otp":"OTP அனுப்பு",
+        "enter_otp":"🔐 OTP ஐ உள்ளிடவும்:",
+        "verify_otp":"OTP ஐ சரிபார்க்கவும்",
+        "reset_otp":"🔄 OTP மீட்டமைக்கவும் / மீண்டும் முயற்சி செய்க",
+        "verified":"✅ சரிபார்க்கப்பட்டது! வரவேற்பு.",
+        "invalid_otp":"❌ தவறான OTP.",
+        "say_something":"எதாவது சொல்லுங்கள்...",
+        "clear_history":"🗑️ உரையாடல்கள் வரலாரை அழிக்கவும்",
+        "change_phone":"🔁 தொலைபேசி எண்ணை மாற்றவும்"
     }
 }
 
+# Map display language name to language code for translate_text and gTTS
+language_codes = {
+    "English": "en",
+    "Kannada": "kn",
+    "Hindi": "hi",
+    "Telugu": "te",
+    "Tamil": "ta"
+}
+
 # --- Translation helper using Gemini ---
-def translate_text(text, target_lang="kn"):
+def translate_text(text, target_lang="en"):
+    """
+    target_lang should be a language code like 'en','kn','hi','te','ta'
+    """
     try:
-        prompt = f"Translate the following text into {target_lang}:\n\n{text}"
+        # Make the prompt explicit about language code and desired result.
+        prompt = f"Translate the following text into language code '{target_lang}':\n\n{text}"
         result = llm.invoke([HumanMessage(content=prompt)])
         return result.content
     except Exception:
         return text
 
 # --- Session state init ---
-for key in ["otp_sent","verified","current_phone","chat_histories","confirm_clear","show_html"]:
+for key in ["otp_sent","verified","current_phone","chat_histories","confirm_clear","show_html","generated_otp"]:
     if key not in st.session_state:
         st.session_state[key] = False if key in ["otp_sent","verified","confirm_clear","show_html"] else ({} if key=="chat_histories" else "")
 
@@ -76,10 +128,10 @@ for key in ["otp_sent","verified","current_phone","chat_histories","confirm_clea
 with st.sidebar:
     st.markdown('<div class="sidebar-header">🌾 Controls</div>', unsafe_allow_html=True)
     
-    lang_choice = st.radio("🌐 Language", ["English","Kannada"])
+    lang_choice = st.radio("🌐 Language", ["English","Kannada","Hindi","Telugu","Tamil"])
     t = translations[lang_choice]
 
-    history_lang = st.radio("📖 Chat History Language", ["English","Kannada"])
+    history_lang = st.radio("📖 Chat History Language", ["English","Kannada","Hindi","Telugu","Tamil"])
 
     phone_status = st.session_state.current_phone
     st.markdown(f'<div class="sidebar-phone">📱 {"Logged in: "+phone_status if phone_status else "No phone number entered"}</div>', unsafe_allow_html=True)
@@ -148,37 +200,96 @@ else:
         chat_history = st.session_state.chat_histories[phone]
 
     # Display history
+    # history_lang is one of the display names; map to content_xx keys
+    content_key_map = {
+        "English": "content_en",
+        "Kannada": "content_kn",
+        "Hindi": "content_hi",
+        "Telugu": "content_te",
+        "Tamil": "content_ta"
+    }
+    chosen_content_key = content_key_map.get(history_lang, "content_en")
+
     for m in chat_history:
-        content = m.get("content_kn") if history_lang=="Kannada" else m.get("content_en")
+        content = m.get(chosen_content_key) or m.get("content_en") or ""
         st.chat_message("user" if m["role"]=="user" else "assistant").markdown(content)
 
     # User input
     user_input = st.chat_input(t["say_something"])
     if user_input:
-        if lang_choice=="Kannada":
-            translated_input = translate_text(user_input, "en")
-            result = llm.invoke([HumanMessage(content=translated_input)])
-            response_en = result.content
-            response_kn = translate_text(response_en, "kn")
-            chat_history.append({"role":"user","content_en":translated_input,"content_kn":user_input})
-            chat_history.append({"role":"assistant","content_en":response_en,"content_kn":response_kn})
-            st.chat_message("user").markdown(user_input)
-            st.chat_message("assistant").markdown(response_kn)
+        # General flow:
+        # If user language is English, call LLM directly. Otherwise translate user input -> English, call LLM, then translate result back.
+        user_lang_code = language_codes.get(lang_choice, "en")
+        # Translate user input to English if needed
+        if user_lang_code != "en":
+            translated_input_en = translate_text(user_input, "en")
         else:
-            result = llm.invoke([HumanMessage(content=user_input)])
-            response_en = result.content
-            response_kn = translate_text(response_en, "kn")
-            chat_history.append({"role":"user","content_en":user_input,"content_kn":response_kn})
-            chat_history.append({"role":"assistant","content_en":response_en,"content_kn":response_kn})
-            st.chat_message("user").markdown(user_input)
-            st.chat_message("assistant").markdown(response_en)
+            translated_input_en = user_input
+
+        # Call LLM with English prompt
+        result = llm.invoke([HumanMessage(content=translated_input_en)])
+        response_en = result.content
+
+        # Translate LLM response into all supported languages (so history can store them)
+        response_kn = translate_text(response_en, "kn")
+        response_hi = translate_text(response_en, "hi")
+        response_te = translate_text(response_en, "te")
+        response_ta = translate_text(response_en, "ta")
+
+        # For the user's own language, pick the appropriate text to display & TTS
+        display_text = {
+            "en": response_en,
+            "kn": response_kn,
+            "hi": response_hi,
+            "te": response_te,
+            "ta": response_ta
+        }.get(user_lang_code, response_en)
+
+        # Store both user message and assistant message with multilingual content fields
+        chat_entry_user = {
+            "role": "user",
+            "content_en": translated_input_en,
+            "content_kn": translate_text(translated_input_en, "kn") if user_lang_code != "en" else (user_input if user_lang_code == "kn" else None),
+            "content_hi": translate_text(translated_input_en, "hi"),
+            "content_te": translate_text(translated_input_en, "te"),
+            "content_ta": translate_text(translated_input_en, "ta")
+        }
+        # If user provided input in a non-English language, try to preserve their original text in that language's field
+        # (fallbacks already exist from translations)
+        if user_lang_code == "kn":
+            chat_entry_user["content_kn"] = user_input
+        elif user_lang_code == "hi":
+            chat_entry_user["content_hi"] = user_input
+        elif user_lang_code == "te":
+            chat_entry_user["content_te"] = user_input
+        elif user_lang_code == "ta":
+            chat_entry_user["content_ta"] = user_input
+        elif user_lang_code == "en":
+            chat_entry_user["content_en"] = user_input
+
+        chat_entry_assistant = {
+            "role": "assistant",
+            "content_en": response_en,
+            "content_kn": response_kn,
+            "content_hi": response_hi,
+            "content_te": response_te,
+            "content_ta": response_ta
+        }
+
+        chat_history.append(chat_entry_user)
+        chat_history.append(chat_entry_assistant)
+
+        # Show chat messages in UI in the user's chosen language
+        st.chat_message("user").markdown(user_input if user_lang_code != "en" else user_input)
+        st.chat_message("assistant").markdown(display_text)
 
         # Save history to file
         with open(filename, "w", encoding="utf-8") as f:
-            json.dump(chat_history, f, ensure_ascii=False)
+            json.dump(chat_history, f, ensure_ascii=False, indent=2)
 
         # --- Optional: Voice output ---
-        tts = gTTS(text=response_en if lang_choice=="English" else response_kn, lang='en' if lang_choice=="English" else 'kn')
+        gtts_lang_code = user_lang_code if user_lang_code in ["en","kn","hi","te","ta"] else "en"
+        tts = gTTS(text=display_text, lang=gtts_lang_code)
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmpfile:
             tts.save(tmpfile.name)
             audio_bytes = open(tmpfile.name, "rb").read()
